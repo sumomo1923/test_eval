@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student, AudioFile, Score
+from .models import Student, AudioFile, Score, Eval_item
 import csv
 from django.http import HttpResponse
 
@@ -7,19 +7,18 @@ class EvaldataInline(admin.StackedInline):
     model = AudioFile
     extra = 2
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
+@admin.register(Eval_item)
+class Eval_itemAdmin(admin.ModelAdmin):
     inlines = (EvaldataInline,)
-    list_display_links = ['id', 'name']
-    list_display = ('id', 'name')
+    list_display_links = ['id', 'item_text', 'item_component']
+    list_display = ('id', 'item_text', 'item_component')
 
 @admin.register(AudioFile)
 class AudioFileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student_number', 'item_type', 'eval_component', 'item_text', 'audio_file', 'uploaded_at')
-    list_display_links = ['id', 'student_number']
-    list_filter = ('id', 'student_number', 'uploaded_at')
-    ordering = ['id', 'student_number', 'item_type', 'eval_component', 'item_text', 'audio_file', 'uploaded_at']
-    readonly_fields = ['uploaded_at']
+    list_display = ('id', 'student_number', 'item', 'item_type', 'audio_file')
+    list_display_links = ['id', 'student_number', 'item', 'item_type', 'audio_file']
+    list_filter = ('id', 'student_number', 'item', 'item_type', 'audio_file')
+    ordering = ['id', 'student_number', 'item', 'item_type', 'audio_file']
 
     def export_to_excel(self, request, queryset):
 
@@ -28,12 +27,11 @@ class AudioFileAdmin(admin.ModelAdmin):
 
         writer = csv.writer(response)
         writer.writerow(
-            ['id', 'student_number', 'item_type', 'eval_component', 'item_text', 'audio_file', 'uploaded_at'])
+            ['id', 'student_number', 'item', 'audio_file'])
 
         for obj in queryset:
             writer.writerow(
-                [obj.id, obj.student_number, obj.item_type, obj.eval_component, obj.item_text, obj.audio_file,
-                 obj.uploaded_at])
+                [obj.id, obj.student_number, obj.item, obj.audio_file])
 
         return response
 
@@ -44,11 +42,11 @@ class AudioFileAdmin(admin.ModelAdmin):
 @admin.register(Score)
 class ScoreAdmin(admin.ModelAdmin):
     list_display_links = ['id', 'user', 'student', 'eval_item', 'rating_un', 'rating_fu', 'rating_ac',
-                          'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause']
+                          'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause', 'uploaded_at']
     list_display = ('id', 'user', 'student', 'eval_item', 'rating_un', 'rating_fu', 'rating_ac',
-                    'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause')
+                    'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause', 'uploaded_at')
     ordering = ['id', 'user', 'student', 'eval_item', 'rating_un', 'rating_fu', 'rating_ac',
-                'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause']
+                'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause', 'uploaded_at']
 
     def export_to_excel(self, request, queryset):
 
@@ -59,13 +57,14 @@ class ScoreAdmin(admin.ModelAdmin):
         writer.writerow(
             ['id', 'user', 'student', 'eval_item',
              'rating_un', 'rating_fu', 'rating_ac',
-             'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause'])
+             'rating_ph', 'rating_accent', 'rating_rule', 'rating_speed', 'rating_pause', 'uploaded_at'])
 
         for obj in queryset:
             writer.writerow(
                 [obj.id, obj.user, obj.student, obj.eval_item,
                  obj.rating_un, obj.rating_fu, obj.rating_ac,
-                 obj.rating_ph, obj.rating_accent, obj.rating_rule, obj.rating_speed, obj.rating_pause])
+                 obj.rating_ph, obj.rating_accent, obj.rating_rule, obj.rating_speed, obj.rating_pause,
+                 obj.uploaded_at])
 
         return response
 

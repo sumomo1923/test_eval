@@ -75,16 +75,16 @@ EVAL_COMPONENT = [
     ('자음_ㅈ, ㅉ, ㅊ', '자음_ㅈ, ㅉ, ㅊ'),
     ('자음_ㄱ, ㄲ, ㅋ', '자음_ㄱ, ㄲ, ㅋ'),
     ('자음_받침_ㅁ, ㄴ, ㅇ, ㅂ, ㄷ, ㄱ', '자음_받침_ㅁ, ㄴ, ㅇ, ㅂ, ㄷ, ㄱ'),
-    ('발음 규칙_평서문_연음, 비음화', '발음 규칙_평서문_연음, 비음화'),
-    ('발음 규칙_평서문_연음, 경음화, 격음화', '발음 규칙_평서문_연음, 경음화, 격음화'),
-    ('발음 규칙_명령문_연음, 경음화, 격음화, ㅎ탈락/약화', '발음 규칙_명령문_연음, 경음화, 격음화, ㅎ탈락/약화'),
-    ('발음 규칙_의문사 있는 의문문_연음, ㄴ첨가, ㅎ탈락/약화, 격음화', '발음 규칙_의문사 있는 의문문_연음, ㄴ첨가, ㅎ탈락/약화, 격음화'),
-    ('발음 규칙_의문사 없는 의문문_연음, 경음화', '발음 규칙_의문사 없는 의문문_연음, 경음화'),
-    ('발음 규칙_의문사 없는 의문문_연음, 유음화, ㅎ탈락/약화', '발음 규칙_의문사 없는 의문문_연음, 유음화, ㅎ탈락/약화'),
-    ('발음 규칙_선택 의문문_연음, 유음화, ㅎ탈락/약화', '발음 규칙_선택 의문문_연음, 유음화, ㅎ탈락/약화'),
-    ('발음 규칙_청유문_연음, 경음화, 구개음화', '발음 규칙_청유문_연음, 경음화, 구개음화'),
-    ('발음 규칙_감탄문_연음, 경음화, 비음화', '발음 규칙_감탄문_연음, 경음화, 비음화'),
-    ('발음 규칙_평서문_연음, 경음화, 비음화', '발음 규칙_평서문_연음, 경음화, 비음화'),
+    ('평서문: 연음, 비음화', '평서문: 연음, 비음화'),
+    ('평서문: 연음, 경음화, 격음화', '평서문: 연음, 경음화, 격음화'),
+    ('명령문: 연음, 경음화, 격음화, ㅎ탈락/약화', '명령문: 연음, 경음화, 격음화, ㅎ탈락/약화'),
+    ('의문사 있는 의문문: 연음, ㄴ첨가, ㅎ탈락/약화, 격음화', '의문사 있는 의문문: 연음, ㄴ첨가, ㅎ탈락/약화, 격음화'),
+    ('의문사 없는 의문문: 연음, 경음화', '의문사 없는 의문문: 연음, 경음화'),
+    ('의문사 없는 의문문: 연음, 유음화, ㅎ탈락/약화', '의문사 없는 의문문: 연음, 유음화, ㅎ탈락/약화'),
+    ('선택 의문문: 연음/유음화, ㅎ탈락/약화', '선택 의문문: 연음, 유음화, ㅎ탈락/약화'),
+    ('청유문: 연음, 경음화, 구개음화', '청유문: 연음, 경음화, 구개음화'),
+    ('감탄문: 연음, 경음화, 비음화', '감탄문: 연음, 경음화, 비음화'),
+    ('평서문: 연음, 경음화, 비음화', '평서문: 연음, 경음화, 비음화'),
 
 ]
 
@@ -170,16 +170,23 @@ class Student(models.Model):
     def __str__(self):
         return self.name
 
-class AudioFile(models.Model):
-    student_number = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='학습자 번호')
-    item_type = models.CharField("평가 대상 종류", max_length=200, choices=ITEM_TYPE, default="")
-    eval_component = models.CharField("평가 요소", max_length=200, choices=EVAL_COMPONENT, default="")
-    item_text = models.CharField("평가 단어/문장", max_length=200, choices=ITEM_TEXT, default="")
-    audio_file = models.FileField("학습자 음성 파일", upload_to='')
-    uploaded_at = models.DateTimeField("평가 일시", auto_now_add=True)
+class Eval_item(models.Model):
+    item_text = models.CharField("평가 단어/문장", choices=ITEM_TEXT, max_length=100, default="")
+    item_component = models.CharField("평가 요소", max_length=200, choices=EVAL_COMPONENT, default="")
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.item_text
+
+class AudioFile(models.Model):
+    student_number = models.CharField("학습자 번호", choices=STUDENT_NUM, max_length=100, default="")
+    item = models.ForeignKey(Eval_item, on_delete=models.CASCADE, verbose_name='평가 단어/문장')
+    item_type = models.CharField("평가 대상 종류", max_length=200, choices=ITEM_TYPE, default="")
+    audio_file = models.FileField("학습자 음성 파일", upload_to='')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.item.item_text
 
 class Score(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='평가자', default="")
@@ -193,4 +200,7 @@ class Score(models.Model):
     rating_rule = models.IntegerField("발음 규칙", default='')
     rating_speed = models.IntegerField("발화 속도", default='')
     rating_pause = models.IntegerField("휴지/머뭇거림", default='')
+    uploaded_at = models.DateTimeField("평가 일시", auto_now_add=True)
 
+    def __str__(self):
+        return self.eval_item
