@@ -182,16 +182,17 @@ class AudioFile(models.Model):
     student_number = models.CharField("학습자 번호", choices=STUDENT_NUM, max_length=100, default="")
     item = models.ForeignKey(Eval_item, on_delete=models.CASCADE, verbose_name='평가 단어/문장')
     item_type = models.CharField("평가 대상 종류", max_length=200, choices=ITEM_TYPE, default="")
-    audio_file = models.FileField("학습자 음성 파일", upload_to='')
+    audio_file = models.FileField("학습자 음성 파일", upload_to='', blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.item.item_text
+        return self.student_number
 
 class Score(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='평가자', default="")
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='학습자 번호', default="")
-    eval_item = models.ForeignKey(AudioFile, on_delete=models.CASCADE, verbose_name='평가 대상', default="")
+    eval_item = models.ForeignKey(Eval_item, on_delete=models.CASCADE, verbose_name='평가 대상', default="")
     rating_un = models.IntegerField("이해도", default='')
     rating_fu = models.IntegerField("유창도", default='')
     rating_ac = models.IntegerField("정확도", default='')
@@ -203,4 +204,4 @@ class Score(models.Model):
     uploaded_at = models.DateTimeField("평가 일시", auto_now_add=True)
 
     def __str__(self):
-        return self.eval_item
+        return self.eval_item.item_text

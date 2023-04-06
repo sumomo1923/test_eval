@@ -13,15 +13,23 @@
         </tr>
       </thead>
       <tbody>
-      {% for audio_file in student_num2 %}
       <tr>
-        <td><center>{{ audio_file.student_number }}</center></td>
-        <td><center><audio controls>
-            <source src="{{ audio_file.audio_file.url }}" type="audio/mp3"></center></audio></td>
+      {% for audio_file in student_num %}
+          <td><center>{{ audio_file.student_number }}</center></td>
+          <td><center>
+              {% if audio_file.audio_file %}
+              <audio controls>
+                  <source src="{{ audio_file.audio_file.url }}" type="audio/mp3">
+              </audio>
+              {% else %}
+              오디오 파일이 없습니다.
+              {% endif %}
+          </center></td>
           <td>{% if audio_file.item_type == "문장" %}
               <form method="POST" enctype="multipart/form-data">
               {% csrf_token %}
-              <input type="hidden" name="audio_file_id" value="{{ audio_file.id }}">
+              <input type="hidden" name="eval_item_name" value="{{ audio_file.item }}">
+              <input type="hidden" name="student_name" value="{{ audio_file.student_number }}">
               <div>
                   <label for="rating_un"><kbd>이해도</kbd></label>
                   <input type="radio" name="rating_un" id="rating_un_0" value="0"><label for="rating_un_0">0</label>
@@ -77,12 +85,14 @@
                   <input type="radio" name="rating_pause" id="rating_pause_3" value="3"><label for="rating_pause_3">3</label>
                   <input type="radio" name="rating_pause" id="rating_pause_4" value="4"><label for="rating_pause_4">4</label>
                   <input type="submit" value="평가 저장">
+                </div>
               </form>
               {% else %}
               <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="hidden" name="audio_file_id" value="{{ audio_file.id }}">
-                <div>
+              <input type="hidden" name="eval_item_name" value="{{ audio_file.item }}">
+              <input type="hidden" name="student_name" value="{{ audio_file.student_number }}">
+                  <div>
                   <label for="rating_un"><kbd>이해도</kbd></label>
                   <input type="radio" name="rating_un" id="rating_un_0" value="0"><label for="rating_un_0">0</label>
                   <input type="radio" name="rating_un" id="rating_un_1" value="1"><label for="rating_un_1">1</label>
@@ -102,52 +112,13 @@
                   <input type="radio" name="rating_ac" id="rating_ac_3" value="3"><label for="rating_ac_3">3</label>
                   <input type="radio" name="rating_ac" id="rating_ac_4" value="4"><label for="rating_ac_4">4</label>
                   <input type="submit" value="평가 저장">
+                  </div>
               </form>
-          </td>
-          </tr>
               {% endif %}
-          {% endfor %}
+          </td>
+      </tr>
+      {% endfor %}
       </tbody>
     </table>
-
-      <!-- 페이징처리 시작 -->
-    <ul class="pagination justify-content-center">
-        <!-- 이전페이지 -->
-        {% if audio_list.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ audio_list.previous_page_number }}">이전</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">이전</a>
-        </li>
-        {% endif %}
-        <!-- 페이지리스트 -->
-        {% for page_number in audio_list.paginator.page_range %}
-        {% if page_number >= audio_list.number|add:-5 and page_number <= audio_list.number|add:5 %}
-        {% if page_number == audio_list.number %}
-        <li class="page-item active" aria-current="page">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-        </li>
-        {% else %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
-        </li>
-        {% endif %}
-        {% endif %}
-        {% endfor %}
-        <!-- 다음페이지 -->
-        {% if audio_list.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ audio_list.next_page_number }}">다음</a>
-        </li>
-        {% else %}
-        <li class="page-item disabled">
-            <a class="page-link" tabindex="-1" aria-disabled="true" href="#">다음</a>
-        </li>
-        {% endif %}
-    </ul>
-    <!-- 페이징처리 끝 -->
-
   </div>
     {% endblock %}

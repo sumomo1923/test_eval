@@ -6,6 +6,10 @@ from django.http import HttpResponse
 class EvaldataInline(admin.StackedInline):
     model = AudioFile
     extra = 2
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    list_display_links = ['id', 'name']
+    list_display = ('id', 'name')
 
 @admin.register(Eval_item)
 class Eval_itemAdmin(admin.ModelAdmin):
