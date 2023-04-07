@@ -15,7 +15,7 @@ class StudentAdmin(admin.ModelAdmin):
 class Eval_itemAdmin(admin.ModelAdmin):
     inlines = (EvaldataInline,)
     list_display_links = ['id', 'item_text', 'item_component']
-    list_display = ('id', 'item_text', 'item_component')
+    list_display = ('id', 'my_id', 'item_text', 'item_component')
 
 @admin.register(AudioFile)
 class AudioFileAdmin(admin.ModelAdmin):
