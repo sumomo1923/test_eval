@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 def student_list(request):
     page = request.GET.get('page', '1')  # 페이지
-    item_list = Eval_item.objects.order_by('pub_date')
+    item_list = Eval_item.objects.order_by('-pub_date')
     paginator = Paginator(item_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
     context = {'item_list': page_obj}
@@ -15,7 +15,7 @@ def student_list(request):
 def audio_list(request, item_id):
 
     item_by_num = Eval_item.objects.filter(id=item_id)
-    student_num = AudioFile.objects.filter(item=item_id)
+    student_num = AudioFile.objects.filter(item=item_id).order_by('student_number')
 
     eval_item_type = ''
 
@@ -29,7 +29,7 @@ def audio_list(request, item_id):
 
     if request.method == 'POST':
         student_name = request.POST['student_name']
-        student = Student.objects.get(name=student_name)
+        student = Student.objects.get(name=student_name).order_by('name')
         eval_item_name = Eval_item.objects.get(item_text=eval_item_name)
 
         std = Score()

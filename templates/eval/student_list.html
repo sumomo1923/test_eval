@@ -8,6 +8,7 @@
     ......(수정 필요)......<br></center></p><br>
 
 <div class="container my-3">
+    {% csrf_token %}
     <table class="table">
         <thead>
             <tr class="table-dark">
@@ -17,17 +18,18 @@
             </tr>
         </thead>
         <tbody>
+            </tr>
             {% if item_list %}
                 {% for item in item_list %}
-                    <tr>
-                        <td><center>{{ item.id }}</center></td>
-                        <td><center>{{ item.item_text }}</center></td>
-                        <td><center><a href="/eval/{{ item.id }}/" class="btn btn-success"> 평가하기 </a>
-                        </center></td>
-                            {% csrf_token %}
-                    </tr>
+            <tr>
+                <td><center>{{ item.id }}</center></td>
+                <td><center>{{ item.item_text }}</center></td>
+                <td><center><a href="/eval/{{ item.id }}/" class="btn btn-success"> 평가하기 </a>
+                </center></td>
+            </tr>
                 {% endfor %}
             {% endif %}
+
         </tbody>
     </table>
     <!-- 페이징처리 시작 -->
