@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 def student_list(request):
     page = request.GET.get('page', '1')  # 페이지
-    item_list = Eval_item.objects.order_by('-pub_date')
+    item_list = Eval_item.objects.order_by('my_id')
     paginator = Paginator(item_list, 10)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
     context = {'item_list': page_obj}
