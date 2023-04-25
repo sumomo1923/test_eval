@@ -4,6 +4,12 @@ from .models import Student, AudioFile, Score, Eval_item
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
+def home(request):
+    return render(request, 'eval/home.html')
+
+def test_info(request):
+    return render(request, 'eval/test_info.html')
+
 def student_list(request):
     page = request.GET.get('page', '1')  # 페이지
     item_list = Eval_item.objects.order_by('my_id')
@@ -29,20 +35,20 @@ def audio_list(request, item_id):
 
     if request.method == 'POST':
         student_name = request.POST['student_name']
-        student = Student.objects.get(name=student_name).order_by('name')
+        student = Student.objects.get(name=student_name)
         eval_item_name = Eval_item.objects.get(item_text=eval_item_name)
 
         std = Score()
         std.user = request.user
         std.student = student
         std.eval_item = eval_item_name
-        std.rating_un = request.POST['rating_un']
-        std.rating_fu = request.POST['rating_fu']
-        std.rating_ac = request.POST['rating_ac']
+        std.rating_ho = request.POST['rating_ho']
+        std.rating_un = request.POST.get('rating_un', 9)
+        std.rating_fu = request.POST.get('rating_fu', 9)
+        std.rating_ac = request.POST.get('rating_ac', 9)
         std.rating_ph = request.POST.get('rating_ph', 9)
         std.rating_accent = request.POST.get('rating_accent', 9)
         std.rating_rule = request.POST.get('rating_rule', 9)
-        std.rating_speed = request.POST.get('rating_speed', 9)
         std.rating_pause = request.POST.get('rating_pause', 9)
         std.save()
 
@@ -51,3 +57,6 @@ def audio_list(request, item_id):
                'eval_item_name': eval_item_name,
                'eval_item_type': eval_item_type}
     return render(request, 'eval/audio_list.html', context)
+
+def vote(request):
+    return render(request, 'eval/vote.html')
