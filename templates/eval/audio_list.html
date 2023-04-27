@@ -61,26 +61,8 @@
                   <input type="radio" name="rating_pause" id="rating_pause_4" value="4"><label for="rating_pause_4">4</label>
                   <input type="radio" name="rating_pause" id="rating_pause_5" value="5"><label for="rating_pause_5">5</label>
                   <input type="submit" value="평가 저장">
-<script>
-    // 저장 버튼 클릭 시 평가 항목이 모두 체크되었는지 확인
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', (event) => {
-            const radioGroups = ['rating_ho', 'rating_ph', 'rating_rule', 'rating_accent', 'rating_pause'];
-            // 각각의 평가 항목 그룹에서 체크된 항목이 있는지 확인
-            for (const group of radioGroups) {
-                if (!form.querySelector(`input[name="${group}"]:checked`)) {
-                    alert(`일부 평가 항목이 선택되지 않았습니다.`);
-                    event.preventDefault(); // 폼 제출 취소
-                    return;
-                }
-            }
-            alert('평가가 저장되었습니다!');
-        });
-    });
-</script>
                 </div>
               </form>
-
               {% else %}
               <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -116,11 +98,15 @@
                   <input type="submit" value="평가 저장">
               </div>
               </form>
+              {% endif %}
+          </td>
+      </tr>
+      {% endfor %}
 <script>
     // 저장 버튼 클릭 시 평가 항목이 모두 체크되었는지 확인
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', (event) => {
-            const radioGroups = ['rating_ho', 'rating_un', 'rating_fu', 'rating_ac'];
+            const radioGroups = {% if eval_item_type == "단어" %}['rating_ho', 'rating_un', 'rating_fu', 'rating_ac']{% else %}['rating_ho', 'rating_ph', 'rating_rule', 'rating_accent', 'rating_pause']{% endif %};
             // 각각의 평가 항목 그룹에서 체크된 항목이 있는지 확인
             for (const group of radioGroups) {
                 if (!form.querySelector(`input[name="${group}"]:checked`)) {
@@ -133,10 +119,6 @@
         });
     });
 </script>
-              {% endif %}
-          </td>
-      </tr>
-      {% endfor %}
       </tbody>
     </table>
   </div>
