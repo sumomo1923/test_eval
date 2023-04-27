@@ -15,7 +15,7 @@
           <td><center>{{ audio_file.student_number }}</center></td>
           <td><center>
               {% if audio_file.audio_file %}
-              <audio controls>
+              <audio controls controlsList="nodownload">
                   <source src="{{ audio_file.audio_file.url }}" type="audio/mp3">
               </audio>
               {% else %}
@@ -63,6 +63,21 @@
                   <input type="submit" value="평가 저장">
                 </div>
               </form>
+              <script>
+              // 저장 버튼 클릭 시 평가 항목이 모두 체크되었는지 확인
+              document.querySelector('form').addEventListener('submit', (event) => {
+              const radioGroups = ['rating_ho', 'rating_ph', 'rating_rule', 'rating_accent', 'rating_pause'];
+              // 각각의 평가 항목 그룹에서 체크된 항목이 있는지 확인
+              for (const group of radioGroups) {
+              if (!document.querySelector(`input[name="${group}"]:checked`)) {
+              alert(`일부 평가 항목이 선택되지 않았습니다.`);
+              event.preventDefault(); // 폼 제출 취소
+              return;
+              }
+              }
+              alert('평가가 저장되었습니다!');
+              });
+</script>
               {% else %}
               <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -96,8 +111,23 @@
                   <input type="radio" name="rating_ac" id="rating_ac_4" value="4"><label for="rating_ac_4">4</label>
                   <input type="radio" name="rating_ac" id="rating_ac_5" value="5"><label for="rating_ac_5">5</label>
                   <input type="submit" value="평가 저장">
-                  </div>
+              </div>
               </form>
+              <script>
+              // 저장 버튼 클릭 시 평가 항목이 모두 체크되었는지 확인
+              document.querySelector('form').addEventListener('submit', (event) => {
+              const radioGroups = ['rating_ho', 'rating_un', 'rating_fu', 'rating_ac'];
+              // 각각의 평가 항목 그룹에서 체크된 항목이 있는지 확인
+              for (const group of radioGroups) {
+              if (!document.querySelector(`input[name="${group}"]:checked`)) {
+              alert(`일부 평가 항목이 선택되지 않았습니다.`);
+              event.preventDefault(); // 폼 제출 취소
+              return;
+              }
+              }
+              alert('평가가 저장되었습니다!');
+              });
+</script>
               {% endif %}
           </td>
       </tr>
